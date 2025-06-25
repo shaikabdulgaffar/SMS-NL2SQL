@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Student - University Management</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --input-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            --primary-color: #667eea;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --border-color: #e2e8f0;
+            --bg-light: #f7fafc;
+            --white: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0px 0;
+            position: relative;
+            overflow-x: hidden;
+
+            /* Center content using flexbox */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            width: 96%;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: var(--primary-gradient);
+            color: var(--white);
+            padding: 0.5rem 1rem; /* Reduced from 3rem 2rem */
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            padding: 0.5rem 0; /* Added: reduce vertical space */
+        }
+
+        .header h1 {
+            font-size: 1.6rem; /* Reduced from 2.5rem */
+            font-weight: 700;
+            margin-bottom: 0.2rem; /* Reduced margin */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
+            letter-spacing: -0.5px;
+        }
+
+        .header h1 i {
+            font-size: 1.2rem; /* Reduced icon size */
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem; /* Slightly smaller */
+            font-weight: 400;
+            margin-top: 0.2rem; /* Reduced space */
+        }
+
+        .form-container {
+            padding: 2.5rem;
+            max-height: 70vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--bg-light);
+        }
+
+        .form-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .form-container::-webkit-scrollbar-track {
+            background: var(--bg-light);
+        }
+
+        .form-container::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .form-section {
+            margin-bottom: 2.5rem;
+            background: var(--white);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--input-shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: var(--transition);
+            transform-origin: left;
+        }
+
+        .form-section:hover::before {
+            transform: scaleX(1);
+        }
+
+        .form-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        .form-section-title i {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            color: var(--white);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* Fixed 3 columns */
+            gap: 1.5rem 2rem; /* Increased horizontal gap for better spacing */
+        }
+
+        /* Responsive adjustments for the grid */
+        @media (max-width: 1200px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr; /* 1 column on mobile */
+            }
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            transition: var(--transition);
+        }
+
+        .form-field {
+            position: relative;
+        }
+
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 400;
+            background: var(--bg-light);
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-field input:focus + .form-label,
+        .form-field select:focus + .form-label,
+        .form-field textarea:focus + .form-label {
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .form-field input:invalid {
+            border-color: #ef4444;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .form-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1rem; /* Reduced from 2rem */
+            background: var(--bg-light);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem; /* Reduced from 1rem 2rem */
+            border-radius: 10px; /* Slightly smaller */
+            font-size: 0.95rem; /* Slightly smaller */
+            min-width: 110px; /* Reduced min width */
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            box-shadow: var(--input-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transition: var(--transition);
+            transform: translate(-50%, -50%);
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: var(--white);
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+            color: var(--white);
+        }
+
+        .btn-danger {
+            background: var(--danger-gradient);
+            color: var(--white);
+        }
+
+        .btn span {
+            position: relative;
+            z-index: 2;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: var(--primary-gradient);
+            z-index: 1000;
+            transition: width 0.3s ease;
+        }
+
+        .floating-labels .form-group {
+            position: relative;
+            margin-top: 1rem;
+        }
+
+        .floating-labels .form-label {
+            position: absolute;
+            top: 1rem;
+            left: 1.25rem;
+            background: var(--white);
+            padding: 0 0.5rem;
+            transition: var(--transition);
+            pointer-events: none;
+            color: var(--text-secondary);
+        }
+
+        .floating-labels .form-field input:focus + .form-label,
+        .floating-labels .form-field input:not(:placeholder-shown) + .form-label {
+            top: -0.5rem;
+            left: 1rem;
+            font-size: 0.8rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success-gradient);
+            color: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 1000;
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                width: 98%;
+                margin: 10px auto;
+            }
+
+            .form-container {
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 98%;
+                margin: 10px auto;
+                border-radius: 16px;
+            }
+
+            .header {
+                padding: 2rem 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .form-container {
+                padding: 1.5rem;
+                max-height: none;
+            }
+
+            .form-section {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .form-nav {
+                padding: 1.5rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .form-field:focus-within .input-icon {
+            color: var(--primary-color);
+        }
+
+        /* Additional styles for better three-column layout */
+        .form-section {
+            min-height: fit-content;
+        }
+
+        .form-field input,
+        .form-field select {
+            min-height: 52px; /* Consistent height for all inputs */
+        }
+
+        /* Ensure proper spacing in wide layout */
+        @media (min-width: 1200px) {
+            .form-grid {
+                gap: 1.5rem 2.5rem; /* Extra horizontal spacing on large screens */
+            }
+            
+            .form-container {
+                padding: 3rem; /* More padding on large screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+    <div class="success-message" id="successMessage">
+        <i class="fas fa-check-circle"></i>
+        <span>Student information saved successfully!</span>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>
+                    <i class="fas fa-user-graduate"></i>
+                    <span>{% if form.instance.pk %}Edit Student{% else %}Add New Student{% endif %}</span>
+                </h1>
+                <p>Complete student information management system</p>
+            </div>
+        </div>
+
+        <form method="post" id="studentForm" class="floating-labels">
+            {% csrf_token %}
+            <div class="form-container">
+                <!-- Section 1: Personal Information -->
+                <div class="form-section fade-in" style="animation-delay: 0.1s">
+                    <div class="form-section-title">
+                        <i class="fas fa-user-circle"></i>
+                        Personal Information
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.name }}
+                                <label class="form-label">Full Name</label>
+                                <i class="fas fa-user input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.admission_number }}
+                                <label class="form-label">Admission Number</label>
+                                <i class="fas fa-id-card input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.parent_mobile }}
+                                <label class="form-label">Parent Mobile</label>
+                                <i class="fas fa-phone input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.student_mobile }}
+                                <label class="form-label">Student Mobile</label>
+                                <i class="fas fa-mobile-alt input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.door_number }}
+                                <label class="form-label">Door Number</label>
+                                <i class="fas fa-home input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.street }}
+                                <label class="form-label">Street</label>
+                                <i class="fas fa-road input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.city }}
+                                <label class="form-label">City/Village</label>
+                                <i class="fas fa-city input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.state }}
+                                <label class="form-label">State</label>
+                                <i class="fas fa-map input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.country }}
+                                <label class="form-label">Country</label>
+                                <i class="fas fa-globe input-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Current Academic Details -->
+                <div class="form-section fade-in" style="animation-delay: 0.2s">
+                    <div class="form-section-title">
+                        <i class="fas fa-book-open"></i>
+                        Current Academic Details
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.present_department }}
+                                <label class="form-label">Department</label>
+                                <i class="fas fa-building input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.present_branch }}
+                                <label class="form-label">Branch</label>
+                                <i class="fas fa-code-branch input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.present_year }}
+                                <label class="form-label">Year</label>
+                                <i class="fas fa-calendar input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.present_semester }}
+                                <label class="form-label">Semester</label>
+                                <i class="fas fa-list-ol input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.present_sem_marks }}
+                                <label class="form-label">Current Semester Marks</label>
+                                <i class="fas fa-percentage input-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Previous Academic Details -->
+                <div class="form-section fade-in" style="animation-delay: 0.3s">
+                    <div class="form-section-title">
+                        <i class="fas fa-scroll"></i>
+                        Previous Academic Records
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.tenth_hallticket }}
+                                <label class="form-label">10th Hallticket</label>
+                                <i class="fas fa-ticket-alt input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.tenth_marks }}
+                                <label class="form-label">10th Marks</label>
+                                <i class="fas fa-award input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.twelfth_hallticket }}
+                                <label class="form-label">12th Hallticket</label>
+                                <i class="fas fa-ticket-alt input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.twelfth_branch }}
+                                <label class="form-label">12th Branch</label>
+                                <i class="fas fa-graduation-cap input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.twelfth_marks }}
+                                <label class="form-label">12th Marks</label>
+                                <i class="fas fa-award input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.degree_hallticket }}
+                                <label class="form-label">Degree Hallticket</label>
+                                <i class="fas fa-ticket-alt input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.degree_branch }}
+                                <label class="form-label">Degree Branch</label>
+                                <i class="fas fa-university input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.degree_marks }}
+                                <label class="form-label">Degree Marks</label>
+                                <i class="fas fa-medal input-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Scholar/Hostel & Fees Details -->
+                <div class="form-section fade-in" style="animation-delay: 0.4s">
+                    <div class="form-section-title">
+                        <i class="fas fa-building"></i>
+                        Accommodation & Fees
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.scholar_type }}
+                                <label class="form-label"></label>
+                                <i class="fas fa-bed input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group" id="hostel_block_row">
+                            <div class="form-field">
+                                {{ form.hostel_block }}
+                                <label class="form-label">Hostel Block</label>
+                                <i class="fas fa-building input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.total_fees }}
+                                <label class="form-label">Total Fees</label>
+                                <i class="fas fa-rupee-sign input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.paid_fees }}
+                                <label class="form-label">Paid Fees</label>
+                                <i class="fas fa-credit-card input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-field">
+                                {{ form.balance }}
+                                <label class="form-label">Balance Amount</label>
+                                <i class="fas fa-calculator input-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{ form.non_field_errors }}
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="form-nav">
+                <a href="{% url 'student_list' %}" class="btn btn-danger">
+                    <span><i class="fas fa-times"></i> Cancel</span>
+                </a>
+                <button type="submit" class="btn btn-success">
+                    <span><i class="fas fa-save"></i> Save Student</span>
+                </button>
+            </div>
+            {% if form.instance.pk and form.instance.admission_number %}
+            <div class="form-group" style="margin-top:2rem;">
+                <label class="form-label">Admission Number</label>
+                <input type="text" value="{{ form.instance.admission_number }}" readonly class="form-control" style="background:#f1f1f1;">
+            </div>
+            {% endif %}
+        </form>
+    </div>
+
+    <script>
+        // Enhanced JavaScript functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Progress bar
+            // const progressBar = document.getElementById('progressBar');
+            // const formSections = document.querySelectorAll('.form-section');
+            // let currentSection = 0;
+
+            // Update progress based on scroll
+            // window.addEventListener('scroll', updateProgress);
+
+            // function updateProgress() {
+            //     const windowHeight = window.innerHeight;
+            //     const documentHeight = document.documentElement.scrollHeight - windowHeight;
+            //     const scrolled = window.scrollY;
+            //     const progress = (scrolled / documentHeight) * 100;
+            //     progressBar.style.width = progress + '%';
+            // }
+
+            // Hostel block show/hide logic with animation
+            function toggleHostelBlock() {
+                const scholarType = document.getElementById('id_scholar_type');
+                const hostelBlockRow = document.getElementById('hostel_block_row');
+                
+                if (scholarType && hostelBlockRow) {
+                    if (scholarType.value === 'hosteler') {
+                        hostelBlockRow.style.display = '';
+                        hostelBlockRow.style.opacity = '0';
+                        hostelBlockRow.style.transform = 'translateY(-20px)';
+                        
+                        setTimeout(() => {
+                            hostelBlockRow.style.transition = 'all 0.3s ease';
+                            hostelBlockRow.style.opacity = '1';
+                            hostelBlockRow.style.transform = 'translateY(0)';
+                        }, 10);
+                    } else {
+                        hostelBlockRow.style.transition = 'all 0.3s ease';
+                        hostelBlockRow.style.opacity = '0';
+                        hostelBlockRow.style.transform = 'translateY(-20px)';
+                        
+                        setTimeout(() => {
+                            hostelBlockRow.style.display = 'none';
+                            document.getElementById('id_hostel_block').value = '';
+                        }, 300);
+                    }
+                }
+            }
+
+            // Initialize hostel block toggle
+            const scholarType = document.getElementById('id_scholar_type');
+            if (scholarType) {
+                scholarType.addEventListener('change', toggleHostelBlock);
+                toggleHostelBlock();
+            }
+
+            // Form submission with loading overlay
+            const form = document.getElementById('studentForm');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const successMessage = document.getElementById('successMessage');
+
+            form.addEventListener('submit', function(e) {
+                // Show loading overlay
+                loadingOverlay.style.display = 'flex';
+                
+                // Add a slight delay to show the loading effect
+                setTimeout(() => {
+                    // In a real application, you would submit the form here
+                    // For demo purposes, we'll just hide the loading and show success
+                    loadingOverlay.style.display = 'none';
+                    successMessage.style.display = 'flex';
+                    
+                    // Hide success message after 3 seconds
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 3000);
+                }, 1000);
+                
+                // Uncomment this line to prevent actual form submission for demo
+                // e.preventDefault();
+            });
+
+            // Auto-calculate balance
+            const totalFeesInput = document.getElementById('id_total_fees');
+            const paidFeesInput = document.getElementById('id_paid_fees');
+            const balanceInput = document.getElementById('id_balance');
+
+            function calculateBalance() {
+                const totalFees = parseFloat(totalFeesInput.value) || 0;
+                const paidFees = parseFloat(paidFeesInput.value) || 0;
+                const balance = totalFees - paidFees;
+                balanceInput.value = balance >= 0 ? balance : 0;
+            }
+
+            if (totalFeesInput && paidFeesInput && balanceInput) {
+                totalFeesInput.addEventListener('input', calculateBalance);
+                paidFeesInput.addEventListener('input', calculateBalance);
+            }
+
+            // Add floating label functionality
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                if (input.value) {
+                    input.classList.add('has-value');
+                }
+                
+                input.addEventListener('input', function() {
+                    if (this.value) {
+                        this.classList.add('has-value');
+                    } else {
+                        this.classList.remove('has-value');
+                    }
+                });
+            });
+
+            // Smooth scroll for better UX
+            document.documentElement.style.scrollBehavior = 'smooth';
+
+            // Add ripple effect to buttons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('div');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.cssText = `
+                        position: absolute;
+                        width: ${size}px;
+                        height: ${size}px;
+                        left: ${x}px;
+                        top: ${y}px;
+                        background: rgba(255, 255, 255, 0.6);
+                        border-radius: 50%;
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        pointer-events: none;
+                    `;
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+
+            // Add CSS for ripple animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes ripple {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+                .btn {
+                    position: relative;
+                    overflow: hidden;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

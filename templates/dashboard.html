@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dashboard - University Management System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="University Management System Dashboard">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary-color: #6366f1;
+            --accent-color: #10b981;
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-light: #9ca3af;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-accent: #f1f5f9;
+            --bg-tertiary: #e9ecef;
+            --border-color: #e5e7eb;
+            --border-light: #f3f4f6;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Top Navigation Bar */
+        .top-navbar {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .navbar-brand i {
+            color: var(--primary-color);
+            font-size: 2rem;
+        }
+
+        /* Top Controls Container - Similar to CLY.AI */
+        .top-controls {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        /* Mode Tabs - Similar to CLY.AI */
+        .mode-tabs {
+            display: flex;
+            background-color: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .tab-btn.active {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        /* User Dropdown */
+        .navbar-user {
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-light);
+            min-width: 220px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .user-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-light);
+            background: var(--bg-accent);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .dropdown-user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .dropdown-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-accent);
+            color: var(--primary-color);
+        }
+
+        .dropdown-item.danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-light);
+            margin: 0.5rem 0;
+        }
+
+        /* Main Content */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Dashboard Sections */
+        .dashboard-section {
+            display: none;
+        }
+
+        .dashboard-section.active {
+            display: block;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Two Column Dashboard */
+        .two-col-dashboard {
+            display: flex;
+            gap: 2.5rem;
+            align-items: flex-start;
+            padding: 2rem 2rem;
+        }
+
+        .dashboard-left, .dashboard-right {
+            flex: 1 1 0;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-left {
+            max-width: 380px;
+        }
+
+        .dashboard-right {
+            flex: 2 1 0;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            padding: 1rem 1.5rem;
+            overflow-x: auto;
+        }
+
+        .vertical-bar {
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 1rem 1rem;
+            flex: 1;
+            display: flex;
+        }
+
+        .stat-bar-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1.25rem;
+            border-radius: 8px;
+            background: var(--bg-accent);
+            min-width: 180px;
+            margin: 0.25rem 0;
+            flex: 0 0 auto;
+            box-shadow: var(--shadow-sm);
+            transition: background 0.2s;
+        }
+
+        .vertical-bar .stat-bar-item {
+            min-width: 0;
+            width: 100%;
+            margin: 0;
+            justify-content: flex-start;
+        }
+
+        .stat-bar-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .stat-bar-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.1rem;
+        }
+
+        .stat-bar-icon.users { background: linear-gradient(135deg, #3b82f6, #1d4ed8);}
+        .stat-bar-icon.database { background: linear-gradient(135deg, #10b981, #059669);}
+        .stat-bar-icon.queries { background: linear-gradient(135deg, #f59e0b, #d97706);}
+        .stat-bar-icon.reports { background: linear-gradient(135deg, #8b5cf6, #7c3aed);}
+
+        .stat-bar-label {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+            flex: 1 1 auto;
+        }
+
+        .stat-bar-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            min-width: 32px;
+            text-align: right;
+        }
+
+        /* Quick Actions */
+        .quick-actions-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            flex: 1;
+            justify-content: space-between;
+        }
+
+        .quick-action-card {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            padding: 2rem 2rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: box-shadow 0.2s, background 0.2s;
+            border: 1px solid var(--border-light);
+            position: relative;
+            flex: 1;
+            min-height: 80px;
+        }
+
+        .quick-action-card:hover {
+            background: var(--bg-accent);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .quick-action-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .quick-action-icon.students { background: linear-gradient(135deg, #3b82f6, #1d4ed8);}
+        .quick-action-icon.nl2sql { background: linear-gradient(135deg, #10b981, #059669);}
+        .quick-action-icon.admin { background: linear-gradient(135deg, #8b5cf6, #7c3aed);}
+
+        .quick-action-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.15rem;
+        }
+
+        .quick-action-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .quick-action-card i.fa-arrow-right {
+            margin-left: auto;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+
+        .quick-action-card:hover i.fa-arrow-right {
+            transform: translateX(4px);
+        }
+
+        /* Students Grid */
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .student-card {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            border: 1px solid var(--border-light);
+            transition: all 0.3s ease;
+        }
+
+        .student-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .student-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .student-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .student-info h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .student-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Analytics Section */
+        .analytics-section {
+            margin-top: 2rem;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .analytics-card {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+
+        .analytics-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .analytics-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .analytics-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar-container {
+                padding: 0 1rem;
+            }
+
+            .top-controls {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .mode-tabs {
+                order: 1;
+                width: 100%;
+            }
+
+            .main-container {
+                padding: 1rem;
+            }
+
+            .two-col-dashboard {
+                flex-direction: column;
+                gap: 2rem;
+                padding: 1rem 0.5rem;
+            }
+
+            .dashboard-left {
+                max-width: 100%;
+            }
+
+            .dashboard-right {
+                width: 100%;
+            }
+
+            .quick-actions-vertical {
+                justify-content: flex-start;
+            }
+
+            .quick-action-card {
+                flex: none;
+            }
+
+            .students-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .analytics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tab-btn span {
+                display: none;
+            }
+            
+            .action-btn span {
+                display: none;
+            }
+
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-navbar">
+        <div class="navbar-container">
+            <a href="{% url 'dashboard' %}" class="navbar-brand">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>University Management</span>
+            </a>
+            
+            <div class="top-controls">
+                <div class="mode-tabs">
+                    <button class="tab-btn active" data-mode="overview">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Dashboard</span>
+                    </button>
+                    <button class="tab-btn" data-mode="students">
+                        <i class="fas fa-users"></i>
+                        <span>Students</span>
+                    </button>
+                    <button class="tab-btn" data-mode="nl2sql">
+                        <i class="fas fa-comments"></i>
+                        <span>NL2SQL</span>
+                    </button>
+                </div>
+                
+                <!-- User Dropdown -->
+                <div class="navbar-user">
+                    <div class="user-avatar" id="userAvatar">
+                        {{ request.user.username|first|upper }}
+                    </div>
+                    
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-info">
+                                <div class="dropdown-avatar">
+                                    {{ request.user.username|first|upper }}
+                                </div>
+                                <div>
+                                    <h4 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 0.1rem;">{{ request.user.username }}</h4>
+                                    <p style="font-size: 0.8rem; color: var(--text-secondary);">Student Manager</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 0.5rem 0;">
+                            <a href="{% url 'change_password' %}" class="dropdown-item">
+                                <i class="fa-solid fa-key"></i>
+                                Change Password
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'logout' %}" class="dropdown-item danger">
+                                <i class="fa-solid fa-sign-out-alt"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Overview Section -->
+        <section class="dashboard-section active" id="overviewSection">
+            <div class="two-col-dashboard">
+                <!-- Left: Quick Overview -->
+                <div class="dashboard-left">
+                    <h2 class="section-title">
+                        <i class="fa-solid fa-chart-bar"></i>
+                        Quick Overview
+                    </h2>
+                    <div class="stats-bar vertical-bar">
+                        <div class="stat-bar-item">
+                            <span class="stat-bar-icon users"><i class="fa-solid fa-users"></i></span>
+                            <span class="stat-bar-label">Total Students</span>
+                            <span class="stat-bar-value">{{ total_students }}</span>
+                        </div>
+                        <div class="stat-bar-item">
+                            <span class="stat-bar-icon database"><i class="fa-solid fa-database"></i></span>
+                            <span class="stat-bar-label">Departments</span>
+                            <span class="stat-bar-value">{{ total_departments }}</span>
+                        </div>
+                        <div class="stat-bar-item">
+                            <span class="stat-bar-icon queries"><i class="fa-solid fa-user-graduate"></i></span>
+                            <span class="stat-bar-label">Day Scholars</span>
+                            <span class="stat-bar-value">{{ day_scholars }}</span>
+                        </div>
+                        <div class="stat-bar-item">
+                            <span class="stat-bar-icon reports"><i class="fa-solid fa-bed"></i></span>
+                            <span class="stat-bar-label">Hostelers</span>
+                            <span class="stat-bar-value">{{ hostelers }}</span>
+                        </div>
+                        <div class="stat-bar-item">
+                            <span class="stat-bar-icon users"><i class="fa-solid fa-mars"></i></span>
+                            <span class="stat-bar-label">Boys</span>
+                            <span class="stat-bar-value">{{ boys }}</span>
+                        </div>
+                        <div class="stat-bar-item">
+                            <span class="stat-bar-icon users"><i class="fa-solid fa-venus"></i></span>
+                            <span class="stat-bar-label">Girls</span>
+                            <span class="stat-bar-value">{{ girls }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Quick Actions -->
+                <div class="dashboard-right">
+                    <h2 class="section-title">
+                        <i class="fa-solid fa-rocket"></i>
+                        Quick Actions
+                    </h2>
+                    <div class="quick-actions-vertical">
+                        <a href="{% url 'student_list' %}" class="quick-action-card">
+                            <span class="quick-action-icon students"><i class="fa-solid fa-users"></i></span>
+                            <div>
+                                <div class="quick-action-title">Student Management</div>
+                                <div class="quick-action-desc">View, add, edit and manage student records</div>
+                            </div>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                        <a href="{% url 'nl2sql_query' %}" class="quick-action-card">
+                            <span class="quick-action-icon nl2sql"><i class="fa-solid fa-comments"></i></span>
+                            <div>
+                                <div class="quick-action-title">NL2SQL Queries</div>
+                                <div class="quick-action-desc">Ask questions in natural language and get instant results</div>
+                            </div>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                        <a href="/admin/" class="quick-action-card">
+                            <span class="quick-action-icon admin"><i class="fa-solid fa-cog"></i></span>
+                            <div>
+                                <div class="quick-action-title">Admin Panel</div>
+                                <div class="quick-action-desc">Advanced system administration</div>
+                            </div>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Tab switching functionality
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const sections = document.querySelectorAll('.dashboard-section');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const mode = btn.dataset.mode;
+                
+                // Handle Students tab - redirect to student list
+                if (mode === 'students') {
+                    window.location.href = "{% url 'student_list' %}";
+                    return;
+                }
+                // Handle NL2SQL tab - redirect to NL2SQL page
+                if (mode === 'nl2sql') {
+                    window.location.href = "{% url 'nl2sql_query' %}";
+                    return;
+                }
+                
+                // Update active tab
+                tabBtns.forEach(tab => tab.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Show corresponding section
+                sections.forEach(section => section.classList.remove('active'));
+                document.getElementById(mode + 'Section').classList.add('active');
+            });
+        });
+
+        // User dropdown functionality
+        const userAvatar = document.getElementById('userAvatar');
+        const userDropdown = document.getElementById('userDropdown');
+
+        userAvatar.addEventListener('click', function(e) {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!userAvatar.contains(e.target) && !userDropdown.contains(e.target)) {
+                userDropdown.classList.remove('show');
+            }
+        });
+
+        // Close dropdown when pressing Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                userDropdown.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

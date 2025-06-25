@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>NL2SQL Query - University Management System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary-color: #6366f1;
+            --accent-color: #10b981;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-accent: #f1f5f9;
+            --border-light: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        /* --- TOP NAVBAR (dashboard style) --- */
+        .top-navbar {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .navbar-brand i {
+            color: var(--primary-color);
+            font-size: 2rem;
+        }
+
+        .top-controls {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .mode-tabs {
+            display: flex;
+            background-color: var(--bg-tertiary, #e9ecef);
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .tab-btn.active {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
+        /* User Dropdown */
+        .navbar-user {
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-light);
+            min-width: 220px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .user-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-light);
+            background: var(--bg-accent);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .dropdown-user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .dropdown-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-accent);
+            color: var(--primary-color);
+        }
+
+        .dropdown-item.danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-light);
+            margin: 0.5rem 0;
+        }
+
+        .main-container {
+            max-width: 1200px; margin: 0 auto; padding: 2rem;
+        }
+
+        .hero-section {
+            text-align: center; margin-bottom: 2rem;
+        }
+
+        .hero-title {
+            font-size: 3rem; font-weight: 900;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem; color: var(--text-secondary);
+            max-width: 500px; margin: 0 auto;
+        }
+
+        .query-examples-section {
+            display: flex; align-items: flex-start; gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .examples-compact {
+            display: flex; align-items: center; gap: 1rem;
+            flex: 1;
+        }
+
+        .examples-label {
+            font-weight: 600; color: var(--text-primary);
+            white-space: nowrap; display: flex; align-items: center; gap: 0.5rem;
+        }
+
+        .examples-row {
+            display: flex; gap: 0.75rem; flex-wrap: wrap;
+        }
+
+        .example-pill {
+            background: var(--bg-primary);
+            border: 2px solid var(--border-light);
+            border-radius: 25px; padding: 0.5rem 1rem;
+            cursor: pointer; transition: all 0.3s ease;
+            font-size: 0.85rem; color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .example-pill:hover {
+            border-color: var(--primary-color);
+            background: rgba(59, 130, 246, 0.05);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .query-card {
+            background: var(--bg-primary);
+            border-radius: 20px; padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-light);
+            margin-bottom: 2rem;
+        }
+
+        .query-form { display: flex; gap: 1rem; align-items: flex-start; }
+
+        .input-wrapper { position: relative; flex: 1; }
+
+        .query-input {
+            width: 100%; padding: 1.5rem 1.5rem 1.5rem 3.5rem;
+            border: 2px solid var(--border-light);
+            border-radius: 15px; font-size: 1rem;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            min-height: 100px; resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        .query-input:focus {
+            outline: none; border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            background: var(--bg-primary);
+        }
+
+        .input-icon {
+            position: absolute; left: 1.2rem; top: 1.5rem;
+            color: var(--text-secondary); font-size: 1.3rem;
+        }
+
+        .query-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white; border: none; border-radius: 15px;
+            padding: 1.5rem 2rem; font-weight: 700;
+            cursor: pointer; transition: all 0.3s ease;
+            height: 100px; min-width: 150px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 0.5rem; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .query-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-icon { font-size: 1.2rem; }
+        .btn-text { font-size: 0.9rem; }
+
+        .result-cards-grid {
+            display: grid; gap: 2rem;
+        }
+
+        .result-card {
+            background: var(--bg-primary);
+            border-radius: 20px; overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-light);
+        }
+
+        .result-header {
+            background: linear-gradient(135deg, var(--bg-accent), var(--bg-secondary));
+            padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-light);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .result-title {
+            font-size: 1.3rem; font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .result-badge {
+            background: var(--primary-color);
+            color: white; padding: 0.3rem 0.8rem;
+            border-radius: 15px; font-size: 0.8rem; font-weight: 600;
+        }
+
+        .result-content { padding: 2rem; }
+
+        .data-table {
+            width: 100%; border-collapse: collapse;
+            border-radius: 12px; overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
+
+        .data-table th {
+            background: var(--bg-accent);
+            padding: 1rem; font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .data-table td {
+            padding: 0.875rem 1rem; color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .data-table tr:hover { background: rgba(59, 130, 246, 0.05); }
+
+        .no-results {
+            text-align: center; padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .no-results-icon {
+            font-size: 3rem; margin-bottom: 1rem;
+            color: var(--primary-color); opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar-container {
+                padding: 0 1rem;
+            }
+
+            .navbar-nav {
+                gap: 1rem;
+            }
+
+            .nav-item span {
+                display: none;
+            }
+
+            .query-examples-section { flex-direction: column; gap: 1rem; }
+            .examples-compact { flex-direction: column; align-items: flex-start; }
+            .examples-row { width: 100%; }
+            .query-form { flex-direction: column; }
+            .hero-title { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- --- TOP NAVBAR (dashboard style) --- -->
+    <nav class="top-navbar">
+        <div class="navbar-container">
+            <a href="{% url 'dashboard' %}" class="navbar-brand">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>University Management</span>
+            </a>
+            <div class="top-controls">
+                <div class="mode-tabs">
+                    <button class="tab-btn" data-mode="overview">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Dashboard</span>
+                    </button>
+                    <button class="tab-btn" data-mode="students">
+                        <i class="fas fa-users"></i>
+                        <span>Students</span>
+                    </button>
+                    <button class="tab-btn active" data-mode="nl2sql">
+                        <i class="fas fa-comments"></i>
+                        <span>NL2SQL</span>
+                    </button>
+                </div>
+                <!-- User Dropdown -->
+                <div class="navbar-user">
+                    <div class="user-avatar" id="userAvatar">
+                        {{ request.user.username|first|upper }}
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-info">
+                                <div class="dropdown-avatar">
+                                    {{ request.user.username|first|upper }}
+                                </div>
+                                <div>
+                                    <h4 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 0.1rem;">{{ request.user.username }}</h4>
+                                    <p style="font-size: 0.8rem; color: var(--text-secondary);">Student Manager</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding: 0.5rem 0;">
+                            <a href="{% url 'change_password' %}" class="dropdown-item">
+                                <i class="fa-solid fa-key"></i>
+                                Change Password
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'logout' %}" class="dropdown-item danger">
+                                <i class="fa-solid fa-sign-out-alt"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- --- END TOP NAVBAR --- -->
+
+    <main class="main-container">
+        <section class="hero-section">
+            <h1 class="hero-title">AI Database Assistant</h1>
+            <p class="hero-subtitle">Ask questions in plain English, get instant database insights</p>
+        </section>
+
+        <section class="query-card">
+            <form method="post" class="query-form" id="queryForm">
+                {% csrf_token %}
+                <div class="input-wrapper">
+                    <textarea name="nl_query" class="query-input" placeholder="What would you like to know about your students and departments?" required id="queryInput"></textarea>
+                    <i class="fa-solid fa-brain input-icon"></i>
+                </div>
+                <button type="submit" class="query-btn" id="queryBtn">
+                    <div class="btn-icon">
+                        <i class="fa-solid fa-magic-wand-sparkles"></i>
+                    </div>
+                    <div class="btn-text">Analyze</div>
+                </button>
+            </form>
+        </section>
+
+        {% if result or sql_query %}
+        <section class="result-cards-grid">
+            <div class="result-card">
+                <div class="result-header">
+                    <h3 class="result-title">Query Results</h3>
+                    <div class="result-badge">{{ result|length }} records</div>
+                </div>
+                <div class="result-content">
+                    {% if result %}
+                    <table class="data-table">
+                        {% if columns %}
+                        <thead>
+                            <tr>{% for column in columns %}<th>{{ column }}</th>{% endfor %}</tr>
+                        </thead>
+                        {% endif %}
+                        <tbody>
+                            {% for row in result %}
+                            <tr>{% for cell in row %}<td>{{ cell|default:"—" }}</td>{% endfor %}</tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="no-results">
+                        <div class="no-results-icon">
+                            <i class="fa-solid fa-search"></i>
+                        </div>
+                        <h4>No Results Found</h4>
+                        <p>Try rephrasing your query or check your database.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+        {% endif %}
+                {% if sql_query %}
+                <div style="margin-top: 1.5rem;">
+                    <button type="button" id="toggleSqlBtn" style="
+                        background: none;
+                        border: none;
+                        color: var(--primary-color);
+                        font-weight: 600;
+                        cursor: pointer;
+                        font-size: 1rem;
+                        padding: 0;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                    ">
+                        <i class="fa-solid fa-code"></i>
+                        <span>Show SQL Query</span>
+                    </button>
+                    <pre id="sqlQueryBox" style="
+                        display: none;
+                        background: var(--bg-accent);
+                        color: #334155;
+                        border-radius: 10px;
+                        padding: 1rem;
+                        margin-top: 0.75rem;
+                        font-size: 0.95rem;
+                        overflow-x: auto;
+                        border: 1px solid var(--border-light);
+                    ">{{ sql_query }}</pre>
+                </div>
+                {% endif %}
+    </main>
+
+    <script>
+        // Tab switching and navigation (dashboard style)
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const mode = btn.dataset.mode;
+                if (mode === 'students') {
+                    window.location.href = "{% url 'student_list' %}";
+                    return;
+                }
+                if (mode === 'nl2sql') {
+                    window.location.href = "{% url 'nl2sql_query' %}";
+                    return;
+                }
+                if (mode === 'overview') {
+                    window.location.href = "{% url 'dashboard' %}";
+                    return;
+                }
+            });
+        });
+
+        // User dropdown functionality
+        const userAvatar = document.getElementById('userAvatar');
+        const userDropdown = document.getElementById('userDropdown');
+
+        userAvatar.addEventListener('click', function(e) {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!userAvatar.contains(e.target) && !userDropdown.contains(e.target)) {
+                userDropdown.classList.remove('show');
+            }
+        });
+
+        // Close dropdown when pressing Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                userDropdown.classList.remove('show');
+            }
+        });
+
+        function fillQuery(query) {
+            const mapping = {
+                'CS students': 'Show me all students from Computer Science department',
+                'Top performers': 'List all students with marks above 80',
+                'Dept averages': 'What are the average marks by department?',
+                'All departments': 'List all departments'
+            };
+            
+            const fullQuery = mapping[query] || query;
+            document.getElementById('queryInput').value = fullQuery;
+            document.getElementById('queryInput').focus();
+        }
+
+        document.getElementById('queryForm').addEventListener('submit', function(e) {
+            const btn = document.getElementById('queryBtn');
+            btn.innerHTML = `
+                <div class="btn-icon">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
+                <div class="btn-text">Processing...</div>
+            `;
+            btn.disabled = true;
+        });
+
+        // Auto-resize textarea
+        const textarea = document.getElementById('queryInput');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.max(100, this.scrollHeight) + 'px';
+        });
+
+        // Toggle SQL Query display
+        const toggleBtn = document.getElementById('toggleSqlBtn');
+        const sqlBox = document.getElementById('sqlQueryBox');
+        if (toggleBtn && sqlBox) {
+            toggleBtn.addEventListener('click', function() {
+                if (sqlBox.style.display === 'none') {
+                    sqlBox.style.display = 'block';
+                    toggleBtn.querySelector('span').textContent = 'Hide SQL Query';
+                } else {
+                    sqlBox.style.display = 'none';
+                    toggleBtn.querySelector('span').textContent = 'Show SQL Query';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
